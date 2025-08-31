@@ -22,11 +22,11 @@ const EditableTable = () => {
             <th>Email (Double Click to Edit)</th>
           </tr>
         </thead>
-        {/* <tbody>
+        <tbody>
           {tableData.map((row) => (
             <TableRow key={row.id} row={row} />
           ))}
-        </tbody> */}
+        </tbody>
       </table>
     </div>
   );

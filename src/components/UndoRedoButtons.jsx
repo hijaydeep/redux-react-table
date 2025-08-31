@@ -1,35 +1,23 @@
-import { useSelector } from "react-redux";
-import TableRow from "./TableRow";
-import UndoRedoButtons from "./UndoRedoButtons";
+import { useDispatch, useSelector } from "react-redux";
+import { undo, redo } from "../redux/tableSlice";
 
-const EditableTable = () => {
-  const { history, currentIndex } = useSelector((state) => state.table);
-  const tableData = history[currentIndex];
+const UndoRedoButtons = () => {
+  const dispatch = useDispatch();
+  const { currentIndex, history } = useSelector((state) => state.table);
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Editable Redux Table (Undo / Redo)</h2>
-      <UndoRedoButtons />
-      <table
-        border="1"
-        cellPadding="10"
-        style={{ borderCollapse: "collapse", marginTop: "10px" }}
+    <div style={{ marginBottom: "10px" }}>
+      <button onClick={() => dispatch(undo())} disabled={currentIndex === 0}>
+        Undo
+      </button>
+      <button
+        onClick={() => dispatch(redo())}
+        disabled={currentIndex === history.length - 1}
       >
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name (Double Click to Edit)</th>
-            <th>Email (Double Click to Edit)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tableData.map((row) => (
-            <TableRow key={row.id} row={row} />
-          ))}
-        </tbody>
-      </table>
+        Redo
+      </button>
     </div>
   );
 };
 
-export default EditableTable;
+export default UndoRedoButtons;
