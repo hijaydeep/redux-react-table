@@ -11,18 +11,33 @@ const tableSlice = createSlice({
   initialState: {
     history: [initialData],
     currentIndex: 0,
+    actions: [], // New: To store descriptions of each change
   },
   reducers: {
     editCell: (state, action) => {
       const { id, field, value } = action.payload;
-      const newData = state.history[state.currentIndex].map((row) =>
+      const currentTableData = state.history[state.currentIndex];
+
+      // Find the row and its old value to create a descriptive log
+      const oldRow = currentTableData.find((row) => row.id === id);
+
+      // If the value hasn't changed, do nothing
+      if (!oldRow || oldRow[field] === value) {
+        return;
+      }
+
+      const actionDescription = `Changed ${oldRow.name}'s ${field} from "${oldRow[field]}" to "${value}"`;
+
+      const newData = currentTableData.map((row) =>
         row.id === id ? { ...row, [field]: value } : row
       );
+      
+      // When making a new edit, remove any "future" states from an undo action
+      const newHistory = state.history.slice(0, state.currentIndex + 1);
+      const newActions = state.actions.slice(0, state.currentIndex);
 
-      state.history = [
-        ...state.history.slice(0, state.currentIndex + 1),
-        newData,
-      ];
+      state.history = [...newHistory, newData];
+      state.actions = [...newActions, actionDescription]; // Add the new action description
       state.currentIndex++;
     },
     undo: (state) => {

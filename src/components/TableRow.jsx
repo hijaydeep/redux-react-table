@@ -13,17 +13,32 @@ const TableRow = ({ row }) => {
   const handleChange = (e) => {
     setEditing({ ...editing, value: e.target.value });
   };
+  
+  // Function to commit the change
+  const saveEdit = () => {
+    // Only dispatch if the value has actually changed
+    if (editing.value !== row[editing.field]) {
+       dispatch(
+        editCell({ id: row.id, field: editing.field, value: editing.value })
+      );
+    }
+    setEditing({ field: null, value: "" });
+  };
+
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      dispatch(
-        editCell({ id: row.id, field: editing.field, value: editing.value })
-      );
-      setEditing({ field: null, value: "" });
+      saveEdit();
     } else if (e.key === "Escape") {
       setEditing({ field: null, value: "" });
     }
   };
+
+  // NEW: Handle saving when the input loses focus
+  const handleBlur = () => {
+    saveEdit();
+  };
+
 
   return (
     <tr>
@@ -35,6 +50,7 @@ const TableRow = ({ row }) => {
             value={editing.value}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
+            onBlur={handleBlur} // Add this event handler
             autoFocus
           />
         ) : (
@@ -48,6 +64,7 @@ const TableRow = ({ row }) => {
             value={editing.value}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
+            onBlur={handleBlur} // Add this event handler
             autoFocus
           />
         ) : (
